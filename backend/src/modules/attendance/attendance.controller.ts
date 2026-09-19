@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Param, Body, UseGuards, Request, Query } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CheckInDto } from './dto/check-in.dto';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -8,8 +9,20 @@ export class AttendanceController {
 
   @UseGuards(JwtAuthGuard)
   @Post('check-in')
-  checkIn(@Body() body: { liveClassId: string }, @Request() req) {
-    return this.attendanceService.checkIn(req.user.id, body.liveClassId);
+  checkIn(@Body() body: CheckInDto, @Request() req) {
+    return this.attendanceService.checkIn(req.user, body.liveClassId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('live-class/:liveClassId/window')
+  getWindow(@Param('liveClassId') liveClassId: string, @Request() req) {
+    return this.attendanceService.getWindow(req.user, liveClassId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('live-class/:liveClassId/summary')
+  getSummary(@Param('liveClassId') liveClassId: string) {
+    return this.attendanceService.getSummary(liveClassId);
   }
 
   @UseGuards(JwtAuthGuard)

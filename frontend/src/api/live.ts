@@ -1,5 +1,6 @@
 import { api } from './index';
-import { LiveClass, LiveClassStatus } from '@/types/live';
+import { LiveClass } from '@/types/live';
+import type { AttendanceRecord, AttendanceSummary, CheckInResult } from '@/types/attendance';
 
 export const liveClassApi = {
   list: () => api.get<LiveClass[]>('/live-classes').then(res => res.data),
@@ -10,7 +11,14 @@ export const liveClassApi = {
 };
 
 export const attendanceApi = {
-  checkIn: (liveClassId: string) => api.post('/attendance/check-in', { liveClassId }).then(res => res.data),
-  getByLiveClass: (liveClassId: string) => api.get(`/attendance/live-class/${liveClassId}`).then(res => res.data),
-  getMyRecords: (courseId?: string) => api.get('/attendance/my', { params: { courseId } }).then(res => res.data),
+  checkIn: (liveClassId: string) =>
+    api.post<CheckInResult>('/attendance/check-in', { liveClassId }).then(res => res.data),
+  getWindow: (liveClassId: string) =>
+    api.get<CheckInResult>(`/attendance/live-class/${liveClassId}/window`).then(res => res.data),
+  getSummary: (liveClassId: string) =>
+    api.get<AttendanceSummary | null>(`/attendance/live-class/${liveClassId}/summary`).then(res => res.data),
+  getByLiveClass: (liveClassId: string) =>
+    api.get<AttendanceRecord[]>(`/attendance/live-class/${liveClassId}`).then(res => res.data),
+  getMyRecords: (courseId?: string) =>
+    api.get('/attendance/my', { params: { courseId } }).then(res => res.data),
 };

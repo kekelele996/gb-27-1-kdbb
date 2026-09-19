@@ -115,6 +115,18 @@ CREATE TABLE IF NOT EXISTS attendance_records (
   check_in_time TIMESTAMP,
   sign_in_duration INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(live_class_id, student_id)
+);
+
+CREATE TABLE IF NOT EXISTS attendance_summaries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  live_class_id UUID NOT NULL UNIQUE REFERENCES live_classes(id) ON DELETE CASCADE,
+  total_enrolled INT NOT NULL DEFAULT 0,
+  present_count INT NOT NULL DEFAULT 0,
+  late_count INT NOT NULL DEFAULT 0,
+  absent_count INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
