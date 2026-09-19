@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: online-classroom-postgres
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: online_classroom
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5501:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d online_classroom"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - online-classroom-network
+
+  redis:
+    container_name: online-classroom-redis
+    image: redis:7-alpine
+    ports:
+      - "6401:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - online-classroom-network
+
+  minio:
+    container_name: online-classroom-minio
+    image: minio/minio:latest
+    command: server /data --console-address ":9002"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9001:9000"
+      - "9002:9002"
+    volumes:
+      - minio_data:/data
+    networks:
+      - online-classroom-network
+
+  backend:
+    container_name: online-classroom-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: online_classroom
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: online-classroom
+      JWT_SECRET: online-classroom-jwt-secret
+      JWT_EXPIRES_IN: 7d
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - online-classroom-network
+
+  frontend:
+    container_name: online-classroom-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+    networks:
+      - online-classroom-network
+
+volumes:
+  postgres_data:
+    name: online-classroom-postgres-data
+  redis_data:
+    name: online-classroom-redis-data
+  minio_data:
+    name: online-classroom-minio-data
+
+networks:
+  online-classroom-network:
+    name: online-classroom-network
