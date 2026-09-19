@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { LiveClass } from './live-class.entity';
 import { User } from './user.entity';
 
@@ -9,6 +9,7 @@ export enum AttendanceStatus {
 }
 
 @Entity('attendance_records')
+@Unique('UQ_attendance_live_student', ['liveClassId', 'studentId'])
 export class AttendanceRecord {
   @PrimaryGeneratedColumn('uuid')
   id: string;

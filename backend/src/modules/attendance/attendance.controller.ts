@@ -13,6 +13,18 @@ export class AttendanceController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('live-class/:liveClassId/window')
+  getCheckInWindow(@Param('liveClassId') liveClassId: string, @Request() req) {
+    return this.attendanceService.getCheckInWindow(req.user.id, req.user.role, liveClassId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('live-class/:liveClassId/summary')
+  getSummary(@Param('liveClassId') liveClassId: string) {
+    return this.attendanceService.getSummary(liveClassId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('live-class/:liveClassId')
   getRecordsByLiveClass(@Param('liveClassId') liveClassId: string) {
     return this.attendanceService.getRecordsByLiveClass(liveClassId);

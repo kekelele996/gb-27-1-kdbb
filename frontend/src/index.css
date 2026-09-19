@@ -82,6 +82,11 @@ body {
   border-top: 1px solid #f0f0f0;
 }
 
+.attendance-panel {
+  max-height: 40%;
+  overflow-y: auto;
+}
+
 .whiteboard {
   border: 2px solid #d9d9d9;
   border-radius: 8px;

@@ -115,7 +115,8 @@ CREATE TABLE IF NOT EXISTS attendance_records (
   check_in_time TIMESTAMP,
   sign_in_duration INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(live_class_id, student_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_courses_teacher ON courses(teacher_id);
